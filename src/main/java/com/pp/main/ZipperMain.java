@@ -19,24 +19,21 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 public class ZipperMain {
 	private static final String REPO_PATH = Dotenv.configure().load().get("REPO_PATH");
-    private static final String USERNAME = Dotenv.configure().load().get("USERNAME");
-    private static final String PASSWORD = Dotenv.configure().load().get("PASSWORD");
+	private static final String USERNAME = Dotenv.configure().load().get("USERNAME");
+	private static final String PASSWORD = Dotenv.configure().load().get("PASSWORD");
 
 	public static void main(String[] args) {
 		try {
 			gitPull();
 
-			// Step 2: Zip subfolders
-			File repoFolder = new File(REPO_PATH);
+			File repoFolder = new File(REPO_PATH + "/pens");
 			File[] subfolders = repoFolder.listFiles(File::isDirectory);
 
 			if (subfolders != null) {
 				for (File subfolder : subfolders) {
 					zipSubfolder(subfolder);
 				}
-
-				// Step 3: Commit and push changes
-				commitAndPush();
+				// commitAndPush();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -46,10 +43,8 @@ public class ZipperMain {
 	private static void gitPull() throws GitAPIException {
 		try (Git git = Git.open(new File(REPO_PATH))) {
 			CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider(USERNAME, PASSWORD);
-
 			PullCommand pull = git.pull().setCredentialsProvider(credentialsProvider);
 			pull.call();
-
 			DoPrint.logInfo("Git pull successful.");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -58,10 +53,9 @@ public class ZipperMain {
 
 	private static void zipSubfolder(File subfolder) {
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-			String zipFileName = subfolder.getName() + "_" + sdf.format(new Date()) + ".zip";
+			String zipFileName = subfolder.getName() + ".zip";
 
-			File zipFile = new File(subfolder.getParent(), zipFileName);
+			File zipFile = new File(REPO_PATH + "/zipper-files", zipFileName);
 
 			// Check if the zip file already exists
 			if (zipFile.exists()) {
@@ -72,10 +66,7 @@ public class ZipperMain {
 				}
 			}
 
-			// Create a ZipOutputStream for the subfolder
 			try (FileOutputStream fos = new FileOutputStream(zipFile); ZipOutputStream zos = new ZipOutputStream(fos)) {
-
-				// Add each file in the subfolder to the zip file
 				File[] files = subfolder.listFiles();
 				if (files != null) {
 					for (File file : files) {
@@ -119,15 +110,9 @@ public class ZipperMain {
 
 	private static void commitAndPush() {
 		try (Git git = Git.open(new File(REPO_PATH))) {
-			// Add changes
 			git.add().addFilepattern(".").call();
-
-			// Commit changes
-			git.commit().setMessage("Updated subfolders").call();
-
-			// Push changes
+			git.commit().setMessage("Updated Zip Files By Cron Schedular").call();
 			git.push().call();
-
 			DoPrint.logInfo("Git commit and push completed.");
 		} catch (IOException | GitAPIException e) {
 			e.printStackTrace();
