@@ -15,5 +15,12 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/javax.servlet-api.jar"/>
 	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/log4j-1.2.16.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/java-dotenv-5.2.2.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/org.eclipse.jgit-5.2.2.201904231744-r.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/annotations-13.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/kotlin-stdlib-1.4.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/kotlin-stdlib-common-1.4.0.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/slf4j-api-2.0.11.jar"/>
+	<classpathentry kind="lib" path="src/main/webapp/WEB-INF/lib/slf4j-simple-2.0.11.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>

@@ -18,12 +18,20 @@ import com.pp.util.Prop;
 import io.github.cdimascio.dotenv.Dotenv;
 
 public class ZipperMain {
-	private static final String REPO_PATH = Dotenv.configure().load().get("REPO_PATH");
-	private static final String USERNAME = Dotenv.configure().load().get("USERNAME");
-	private static final String PASSWORD = Dotenv.configure().load().get("PASSWORD");
+
+	private static final Dotenv dotenv = Dotenv.configure().filename(Prop.getProperty("env.path")).load();
+
+	private static final String REPO_PATH = dotenv.get("REPO_PATH");
+	private static final String USERNAME = dotenv.get("USERNAME");
+	private static final String PASSWORD = dotenv.get("PASSWORD");
 
 	public static void main(String[] args) {
 		try {
+
+			System.out.println("REPO_PATH: " + REPO_PATH);
+			System.out.println("USERNAME: " + USERNAME);
+			System.out.println("PASSWORD: " + PASSWORD);
+
 			gitPull();
 
 			File repoFolder = new File(REPO_PATH + "/pens");

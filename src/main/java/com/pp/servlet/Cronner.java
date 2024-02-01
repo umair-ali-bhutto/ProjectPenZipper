@@ -33,7 +33,7 @@ public class Cronner extends HttpServlet {
 				public void run() {
 					ZipperMain.main(null);
 				}
-			}, 0, Long.parseLong(Prop.getProperty("timer.period")));
+			}, 20000, Long.parseLong(Prop.getProperty("timer.period")));
 		} catch (Exception e) {
 			DoPrint.logException("Cronner Exception", e);
 		}
