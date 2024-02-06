@@ -2,6 +2,7 @@ package com.pp.main;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.PullCommand;
+import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.transport.CredentialsProvider;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
@@ -27,11 +28,6 @@ public class ZipperMain {
 
 	public static void main(String[] args) {
 		try {
-
-			System.out.println("REPO_PATH: " + REPO_PATH);
-			System.out.println("USERNAME: " + USERNAME);
-			System.out.println("PASSWORD: " + PASSWORD);
-
 			gitPull();
 
 			File repoFolder = new File(REPO_PATH + "/pens");
@@ -55,7 +51,7 @@ public class ZipperMain {
 			pull.call();
 			DoPrint.logInfo("Git pull successful.");
 		} catch (IOException e) {
-			e.printStackTrace();
+			DoPrint.logException("PULL EXCEPTION", e);
 		}
 	}
 
@@ -67,7 +63,7 @@ public class ZipperMain {
 
 			// Check if the zip file already exists
 			if (zipFile.exists()) {
-				// Delete the existing zip file
+				DoPrint.logInfo("Zip Exists Deleting: " + zipFileName);
 				if (!zipFile.delete()) {
 					DoPrint.logInfo("Failed to delete existing zip file: " + zipFile.getName());
 					return;
@@ -85,7 +81,7 @@ public class ZipperMain {
 
 			DoPrint.logInfo("Zipped: " + subfolder.getName());
 		} catch (IOException e) {
-			e.printStackTrace();
+			DoPrint.logException("ZIPPING EXCEPTION FOLDER:@@" + subfolder.getName() + "@@", e);
 		}
 	}
 
@@ -120,10 +116,12 @@ public class ZipperMain {
 		try (Git git = Git.open(new File(REPO_PATH))) {
 			git.add().addFilepattern(".").call();
 			git.commit().setMessage("Updated Zip Files By Cron Schedular").call();
-			git.push().call();
+			CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider(USERNAME, PASSWORD);
+			PushCommand push = git.push().setCredentialsProvider(credentialsProvider);
+			push.call();
 			DoPrint.logInfo("Git commit and push completed.");
 		} catch (IOException | GitAPIException e) {
-			e.printStackTrace();
+			DoPrint.logException("COMMIT AND PUSH EXCEPTION", e);
 		}
 	}
 }

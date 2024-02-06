@@ -1,8 +1,11 @@
 package com.pp.servlet;
 
 import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,25 +23,43 @@ import com.pp.util.Prop;
 @WebServlet("/")
 public class Cronner extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private ScheduledExecutorService scheduler;
 
 	public Cronner() {
 		super();
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		try {
-			Timer timer = new Timer();
-			timer.schedule(new TimerTask() {
-				public void run() {
-					ZipperMain.main(null);
-				}
-			}, 20000, Long.parseLong(Prop.getProperty("timer.period")));
-		} catch (Exception e) {
-			DoPrint.logException("Cronner Exception", e);
-		}
-
-		// response.getWriter().append("Cron Job Scheduled!");
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		scheduler = Executors.newSingleThreadScheduledExecutor();
+		scheduleCronJob();
 	}
 
+	@Override
+	public void destroy() {
+		super.destroy();
+		if (scheduler != null) {
+			scheduler.shutdownNow();
+		}
+	}
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		response.getWriter().append("Cron Job Scheduled!");
+	}
+
+	private void scheduleCronJob() {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
+		scheduler.scheduleAtFixedRate(() -> {
+			try {
+				DoPrint.logInfo("Working Directory: " + System.getProperty("user.dir"));
+				DoPrint.logInfo("Cron Job Started at: " + sdf.format(new Date()));
+				ZipperMain.main(null);
+				DoPrint.logInfo("Cron Job Ended at: " + sdf.format(new Date()));
+			} catch (Exception e) {
+				DoPrint.logException("Exception during cron job execution", e);
+			}
+		}, 20, Long.parseLong(Prop.getProperty("timer.period")), TimeUnit.SECONDS);
+	}
 }
