@@ -37,7 +37,8 @@ public class ZipperMain {
 				for (File subfolder : subfolders) {
 					zipSubfolder(subfolder);
 				}
-				// commitAndPush();
+
+				commitAndPush();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -117,8 +118,7 @@ public class ZipperMain {
 			git.add().addFilepattern(".").call();
 			git.commit().setMessage("Updated Zip Files By Cron Schedular").call();
 			CredentialsProvider credentialsProvider = new UsernamePasswordCredentialsProvider(USERNAME, PASSWORD);
-			PushCommand push = git.push().setCredentialsProvider(credentialsProvider);
-			push.call();
+			git.push().setCredentialsProvider(credentialsProvider).call();
 			DoPrint.logInfo("Git commit and push completed.");
 		} catch (IOException | GitAPIException e) {
 			DoPrint.logException("COMMIT AND PUSH EXCEPTION", e);
