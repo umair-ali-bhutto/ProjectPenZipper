@@ -18,8 +18,18 @@ import com.pp.util.Prop;
 
 import io.github.cdimascio.dotenv.Dotenv;
 
+
+/**
+ * @author umair.ali
+ * @version 1.0
+ * 
+ * Main class Will Contain And Perform Business Logic (ZipperMain.class) 
+ */
 public class ZipperMain {
 
+	/**
+	 * @see README.md File For Configuration
+	 */
 	private static final Dotenv dotenv = Dotenv.configure().filename(Prop.getProperty("env.path")).load();
 
 	private static final String REPO_PATH = dotenv.get("REPO_PATH");

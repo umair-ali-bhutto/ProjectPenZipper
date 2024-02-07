@@ -18,6 +18,9 @@ import com.pp.util.DoPrint;
 import com.pp.util.Prop;
 
 /**
+ * @author umair.ali
+ * @version 1.0
+ * 
  * Servlet implementation class Cronner Will Run Cron Jobs
  */
 @WebServlet("/")
@@ -46,20 +49,36 @@ public class Cronner extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		response.getWriter().append("Cron Job Scheduled!");
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
+			DoPrint.logInfo("Cron Job Scheduled! \n At:" + sdf.format(new Date()) + " \nWorking Directory is:"
+					+ System.getProperty("user.dir")+"\nKindly Keep Your .env File On This Path As Told In README.md\nCome On You Have "+Long.parseLong(Prop.getProperty("timer.delay"))+" Seconds.(If Already Kept Kindly Ignore This @UMAIR.ALI)");
+			response.getWriter().append("Cron Job Scheduled! \n At:" + sdf.format(new Date()) + " \nWorking Directory is:"
+					+ System.getProperty("user.dir")+"\nKindly Keep Your .env File On This Path As Told In README.md");
+		} catch (Exception e) {
+			response.getWriter().append("Something Went Wrong.");
+		}
+
 	}
 
 	private void scheduleCronJob() {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-		scheduler.scheduleAtFixedRate(() -> {
-			try {
-				DoPrint.logInfo("Working Directory: " + System.getProperty("user.dir"));
+		try {
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss.SSS");
+
+			scheduler.scheduleAtFixedRate(() -> {
 				DoPrint.logInfo("Cron Job Started at: " + sdf.format(new Date()));
-				ZipperMain.main(null);
+				try {
+					DoPrint.logInfo("Working Directory: " + System.getProperty("user.dir"));
+					ZipperMain.main(null);
+				} catch (Exception e) {
+					DoPrint.logException("Exception during cron job execution", e);
+				}
 				DoPrint.logInfo("Cron Job Ended at: " + sdf.format(new Date()));
-			} catch (Exception e) {
-				DoPrint.logException("Exception during cron job execution", e);
-			}
-		}, 20, Long.parseLong(Prop.getProperty("timer.period")), TimeUnit.SECONDS);
+			}, Long.parseLong(Prop.getProperty("timer.delay")), Long.parseLong(Prop.getProperty("timer.period")),
+					TimeUnit.SECONDS);
+
+		} catch (Exception e) {
+			DoPrint.logException("Exception CRON JOB", e);
+		}
 	}
 }
