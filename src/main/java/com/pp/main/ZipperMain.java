@@ -28,7 +28,7 @@ import io.github.cdimascio.dotenv.Dotenv;
 public class ZipperMain {
 
 	/**
-	 * @see README.md File For Configuration
+	 * @see README.md File For Deployment
 	 */
 	private static final Dotenv dotenv = Dotenv.configure().filename(Prop.getProperty("env.path")).load();
 
